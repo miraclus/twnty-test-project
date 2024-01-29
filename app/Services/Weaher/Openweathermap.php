@@ -28,8 +28,8 @@ class Openweathermap implements WeatherInterface
 
     function update(): void
     {
-        $countries_id = Employee::groupBy('country_id')->pluck('country_id');
-        $countries = Country::whereIn('id', $countries_id)->get();
+        $countriesId = Employee::groupBy('country_id')->pluck('country_id');
+        $countries = Country::whereIn('id', $countriesId)->get();
         foreach ($countries as $country) {
             $weather = $this->getWeather($country->latitude, $country->longitude);
             if ($weather === null) {
@@ -60,7 +60,6 @@ class Openweathermap implements WeatherInterface
             ]);
         } catch (Exception $e) {
             Log::error("Update weather error: " . print_r($e->getMessage(), true));
-            throw new Exception("Update weather error: " . $e->getMessage());
         }
 
         $result = json_decode($response->body(), true);

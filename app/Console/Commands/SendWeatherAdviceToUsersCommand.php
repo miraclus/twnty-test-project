@@ -2,8 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Events\SendWeatherAdviceEvent;
+use App\Mail\WeatherAdviceMail;
+use App\Models\Employee;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
 
 class SendWeatherAdviceToUsersCommand extends Command
 {
@@ -26,6 +28,17 @@ class SendWeatherAdviceToUsersCommand extends Command
      */
     public function handle()
     {
-        event(new SendWeatherAdviceEvent());
+        $employees = Employee::with('country.weatherAdvice')->get();
+
+        foreach ($employees as $employee) {
+            if ($employee->country && $employee->weatherAdvice) {
+                $advices = $employee->weatherAdvice;
+                $advicesForEmail = '';
+                foreach ($advices as $advice) {
+                    $advicesForEmail .= $advice->advice . "\n";
+                }
+                Mail::to($employee->email)->send(new WeatherAdviceMail($advicesForEmail));
+            }
+        }
     }
 }

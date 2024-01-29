@@ -47,13 +47,6 @@ class EmployeeController extends Controller
         return response()->noContent();
     }
 
-    public function test(WeatherInterface $weatherService)
-    {
-//        $weatherService->update();
-        $employee = Employee::all()->first();
-        dd($employee->weatherAdvice);
-    }
-
     public function downloadPdf(Employee $employee): JsonResponse
     {
         $pdfFileName = 'employee-profile-' . $employee->id . '.pdf';
